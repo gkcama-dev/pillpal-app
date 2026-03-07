@@ -1,6 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Connect" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.PillPal" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/darkPurple</item>
         <item name="colorPrimaryVariant">@color/primaryPurple</item>
         <item name="colorAccent">@color/accentBlue</item>
@@ -8,9 +7,13 @@
         <item name="android:statusBarColor">@color/darkPurple</item>
     </style>
 
-    <style name="Theme.App_connect" parent="Base.Theme.Connect" />
+    <style name="Theme.PillPal" parent="Base.Theme.PillPal" />
 
     <style name="CircleImage">
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="App.CustomIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/secondaryPurple</item> <item name="marginHorizontal">10dp</item>
     </style>
 </resources>

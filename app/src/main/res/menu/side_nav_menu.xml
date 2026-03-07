@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/side_nav_group_main"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/side_nav_home"
+            android:icon="@drawable/cottage"
+            android:title="Home"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/side_nav_profile"
+            android:icon="@drawable/person"
+            android:title="Profile"
+            android:visible="false"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/side_nav_order"
+            android:icon="@drawable/box"
+            android:title="Order"
+            android:visible="false"
+            android:checkable="true"/>
+
+        <item
+            android:id="@+id/side_nav_cart"
+            android:icon="@drawable/shopping_cart"
+            android:title="Cart"
+            android:visible="false"
+            android:checkable="true"/>
+
+        <item
+            android:id="@+id/side_nav_settings"
+            android:icon="@drawable/settings"
+            android:title="Settings"
+            android:visible="true"
+            android:checkable="true"/>
+    </group>
+
+    <group android:id="@+id/side_nav_group_auth">
+        <item
+            android:id="@+id/side_nav_login"
+            android:icon="@drawable/login"
+            android:title="Login"
+            android:visible="true"/>
+        <item
+            android:id="@+id/side_nav_logout"
+            android:icon="@drawable/logout"
+            android:title="Logout"
+            android:visible="false"/>
+    </group>
+
+
+</menu>
