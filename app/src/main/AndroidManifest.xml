@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PillPal">
         <activity
+            android:name=".activity.ResetPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.SignUpActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.SignInActivity"
             android:exported="false" />
         <activity
