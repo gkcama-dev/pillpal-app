@@ -1,0 +1,16 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Connect" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/darkPurple</item>
+        <item name="colorPrimaryVariant">@color/primaryPurple</item>
+        <item name="colorAccent">@color/accentBlue</item>
+
+        <item name="android:statusBarColor">@color/darkPurple</item>
+    </style>
+
+    <style name="Theme.App_connect" parent="Base.Theme.Connect" />
+
+    <style name="CircleImage">
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>
