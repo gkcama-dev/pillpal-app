@@ -12,6 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PillPal">
         <activity
+            android:name=".activity.ContactPharmacyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.PharmacyLocationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.OrderSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.PaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.ProductDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.ResetPasswordActivity"
             android:exported="false" />
         <activity

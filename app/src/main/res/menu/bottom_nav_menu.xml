@@ -9,11 +9,12 @@
         android:icon="@drawable/medication"
         android:title="@string/category" />
     <item
-        android:id="@+id/bottom_nav_cart"
-        android:icon="@drawable/shopping_cart"
-        android:title="@string/cart" />
+        android:id="@+id/bottom_nav_order_request"
+        android:icon="@drawable/request_quote"
+        android:title="Request" />
     <item
-        android:id="@+id/bottom_nav_profile"
-        android:icon="@drawable/person"
-        android:title="@string/profile" />
+        android:id="@+id/bottom_nav_order_history"
+        android:icon="@drawable/list_alt"
+        android:title="History" />
+
 </menu>
