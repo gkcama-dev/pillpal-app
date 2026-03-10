@@ -7,25 +7,31 @@
             android:id="@+id/side_nav_home"
             android:icon="@drawable/cottage"
             android:title="Home"
+            android:visible="true"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/side_nav_category"
+            android:icon="@drawable/medication"
+            android:title="Category"
+            android:visible="true"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/side_nav_order"
+            android:icon="@drawable/request_quote"
+            android:title="Order Request"
+            android:visible="true"
+            android:checkable="true"/>
+        <item
+            android:id="@+id/side_nav_history"
+            android:icon="@drawable/list_alt"
+            android:title="Order History"
+            android:visible="true"
             android:checkable="true"/>
         <item
             android:id="@+id/side_nav_profile"
             android:icon="@drawable/person"
             android:title="Profile"
-            android:visible="false"
-            android:checkable="true"/>
-        <item
-            android:id="@+id/side_nav_order"
-            android:icon="@drawable/box"
-            android:title="Order"
-            android:visible="false"
-            android:checkable="true"/>
-
-        <item
-            android:id="@+id/side_nav_cart"
-            android:icon="@drawable/shopping_cart"
-            android:title="Cart"
-            android:visible="false"
+            android:visible="true"
             android:checkable="true"/>
 
         <item
@@ -46,7 +52,7 @@
             android:id="@+id/side_nav_logout"
             android:icon="@drawable/logout"
             android:title="Logout"
-            android:visible="false"/>
+            android:visible="true"/>
     </group>
 
 

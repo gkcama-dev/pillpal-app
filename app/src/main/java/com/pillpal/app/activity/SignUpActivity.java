@@ -18,16 +18,23 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.pillpal.app.R;
 import com.pillpal.app.databinding.ActivitySignUpBinding;
+import com.pillpal.app.model.User;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
     private FirebaseAuth firebaseAuth;
+    private FirebaseFirestore firebaseFirestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +46,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseFirestore = FirebaseFirestore.getInstance();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -59,15 +67,36 @@ public class SignUpActivity extends AppCompatActivity {
         binding.signupBtnSignup.setOnClickListener(view -> {
 
             if (validateInputs()) {
+                String name = binding.signupInputFullname.getText().toString().trim();
                 String email = binding.signupInputEmail.getText().toString().trim();
                 String password = binding.signupInputPassword.getText().toString().trim();
 
                 firebaseAuth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                Toast.makeText(SignUpActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
-                                finish();
+
+                                String uid = task.getResult().getUser().getUid();
+
+                                User user = User.builder()
+                                        .uid(uid)
+                                        .name(name)
+                                        .email(email).build();
+
+                                firebaseFirestore.collection("users")
+                                        .document(uid)
+                                        .set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                Toast.makeText(SignUpActivity.this, "Registration Successful!", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+                                                finish();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+
+                                            }
+                                        });
                             } else {
                                 String error = task.getException() != null ? task.getException().getMessage() : "Registration Failed";
                                 Toast.makeText(SignUpActivity.this, error, Toast.LENGTH_SHORT).show();

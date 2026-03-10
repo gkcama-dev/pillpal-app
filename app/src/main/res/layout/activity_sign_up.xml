@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?android:attr/windowBackground"
     tools:context=".activity.SignUpActivity">
 
     <View
@@ -14,23 +14,14 @@
         android:layout_marginTop="-111dp"
         android:layout_marginEnd="-30dp"
         android:background="@drawable/bg_circle_soft"
+        android:alpha="0.1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:layout_width="25dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="40dp"
-        android:rotation="35"
-        android:src="@drawable/ic_triangle_shape"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSubTitle" />
-
-    <ImageView
         android:id="@+id/imgLogo"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="30dp"
         android:src="@drawable/logo"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +35,7 @@
         android:layout_marginTop="20dp"
         android:fontFamily="@font/quicksand_bold"
         android:text="Sign Up"
-        android:textColor="@color/main_text_color"
+        android:textColor="@color/primaryPurple"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +48,7 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/quicksand_semibold"
         android:text="Please create your account"
-        android:textColor="@color/text_color"
+        android:textColor="?android:attr/textColorSecondary"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -77,18 +68,20 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="Full name"
-            android:textColor="@color/text_color"
-            android:textStyle="bold" />
+            android:textColor="?android:attr/textColorPrimary" />
 
         <EditText
             android:id="@+id/signup_input_fullname"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
+            android:background="@drawable/custom_input_search"
+            android:backgroundTint="?attr/colorSurface"
             android:fontFamily="@font/quicksand_semibold"
             android:paddingHorizontal="20dp"
-            android:textColor="@color/text_color" />
+            android:textColor="?android:attr/textColorPrimary"
+            android:textColorHint="@color/dark_text_secondary"
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -105,19 +98,21 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="E-mail"
-            android:textColor="@color/text_color"
-            android:textStyle="bold" />
+            android:textColor="?android:attr/textColorPrimary" />
 
         <EditText
             android:id="@+id/signup_input_email"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
+            android:background="@drawable/custom_input_search"
+            android:backgroundTint="?attr/colorSurface"
             android:fontFamily="@font/quicksand_semibold"
             android:inputType="textEmailAddress"
             android:paddingHorizontal="20dp"
-            android:textColor="@color/text_color"/>
+            android:textColor="?android:attr/textColorPrimary"
+            android:textColorHint="@color/dark_text_secondary"
+           />
     </LinearLayout>
 
     <LinearLayout
@@ -134,20 +129,21 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="Password"
-            android:textColor="@color/text_color"
-            android:textStyle="bold" />
+            android:textColor="?android:attr/textColorPrimary" />
 
         <EditText
             android:id="@+id/signup_input_password"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
+            android:background="@drawable/custom_input_search"
+            android:backgroundTint="?attr/colorSurface"
             android:fontFamily="@font/quicksand_semibold"
             android:inputType="textPassword"
             android:paddingHorizontal="20dp"
-            android:textColor="@color/text_color" />
-
+            android:textColor="?android:attr/textColorPrimary"
+            android:textColorHint="@color/dark_text_secondary"
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -165,7 +161,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="Already have an account? "
-            android:textColor="@color/text_color" />
+            android:textColor="?android:attr/textColorSecondary" />
 
         <TextView
             android:id="@+id/signup_txt_signin"
@@ -173,44 +169,33 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="Login"
-            android:textColor="@color/text_color_cream" />
+            android:textColor="@color/primaryPurple" />
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/signup_btn_signup"
         android:layout_width="300dp"
-        android:layout_height="55dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="50dp"
         android:background="@drawable/button_bg_purple"
+        android:backgroundTint="@color/primaryPurple"
         android:fontFamily="@font/quicksand_bold"
         android:text="Sign Up"
         android:textAllCaps="false"
-        android:textColor="@color/btn_text_color"
-        android:textSize="25sp"
-        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-
-        android:id="@+id/ic_bottom_triangle"
-        android:layout_width="25dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="110dp"
-        android:layout_marginBottom="120dp"
-        android:rotation="-102"
-        android:src="@drawable/ic_triangle_shape"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <View
         android:layout_width="297dp"
         android:layout_height="295dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="200dp"
+        android:layout_marginBottom="-100dp"
         android:background="@drawable/bg_circle_soft"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_bottom_triangle" />
+        android:alpha="0.1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

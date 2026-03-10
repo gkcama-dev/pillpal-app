@@ -2,10 +2,10 @@
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     tools:context=".activity.MainActivity">
 
 
@@ -13,14 +13,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/white"
+            android:background="?android:attr/windowBackground"
             app:contentInsetStart="0dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,6 +33,7 @@
                     android:layout_height="40dp"
                     android:padding="8dp"
                     android:src="@drawable/menu"
+                    app:tint="?android:attr/textColorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -45,10 +46,14 @@
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/custom_input_search"
                     android:drawableStart="@drawable/search"
+                    android:backgroundTint="?attr/colorSurface"
                     android:drawablePadding="8dp"
                     android:hint="@string/search_here"
+                    app:drawableTint="?android:attr/textColorSecondary"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorHint="?android:attr/textColorSecondary"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/user_profile_image"
@@ -64,6 +69,7 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/avatar"
                     app:shapeAppearanceOverlay="@style/CircleImage"
+                    app:strokeColor="@color/primaryPurple"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -82,7 +88,7 @@
             android:id="@+id/bottom_navigation_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="?attr/colorSurface"
             app:elevation="10dp"
             app:itemIconSize="26dp"
             app:itemIconTint="@color/nav_item_colors"

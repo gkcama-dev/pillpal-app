@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?android:attr/windowBackground"
     tools:context=".activity.SignInActivity">
 
     <View
@@ -15,13 +15,14 @@
         android:layout_marginTop="-111dp"
         android:layout_marginEnd="-30dp"
         android:background="@drawable/bg_circle_soft"
+        android:alpha="0.1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imgLogo"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="30dp"
         android:src="@drawable/logo"
         app:layout_constraintEnd_toEndOf="parent"
@@ -35,7 +36,7 @@
         android:layout_marginTop="20dp"
         android:fontFamily="@font/quicksand_bold"
         android:text="Sign In"
-        android:textColor="@color/main_text_color"
+        android:textColor="@color/primaryPurple"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -48,21 +49,11 @@
         android:layout_marginTop="8dp"
         android:fontFamily="@font/quicksand_semibold"
         android:text="Please login to your account"
-        android:textColor="@color/text_color"
+        android:textColor="?android:attr/textColorSecondary"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvSignInTitle" />
-
-    <ImageView
-        android:layout_width="25dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="40dp"
-        android:rotation="35"
-        android:src="@drawable/ic_triangle_shape"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSubTitle" />
 
     <LinearLayout
         android:id="@+id/layoutEmail"
@@ -78,18 +69,20 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="E-mail"
-            android:textColor="@color/text_color" />
+            android:textColor="?android:attr/textColorPrimary" />
 
         <EditText
             android:id="@+id/signin_input_email"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
+            android:background="@drawable/custom_input_search"
+            android:backgroundTint="?attr/colorSurface"
             android:fontFamily="@font/quicksand_semibold"
             android:inputType="textEmailAddress"
             android:paddingHorizontal="20dp"
-            android:textColor="@color/text_color" />
+            android:textColor="?android:attr/textColorPrimary"
+            android:textColorHint="@color/dark_text_secondary" />
     </LinearLayout>
 
     <LinearLayout
@@ -106,29 +99,32 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="Password"
-            android:textColor="@color/text_color" />
+            android:textColor="?android:attr/textColorPrimary" />
 
         <EditText
             android:id="@+id/signin_input_password"
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/edittext_rounded_bg"
+            android:background="@drawable/custom_input_search"
+            android:backgroundTint="?attr/colorSurface"
             android:fontFamily="@font/quicksand_semibold"
             android:inputType="textPassword"
             android:paddingHorizontal="20dp"
-            android:textColor="@color/text_color" />
+            android:textColor="?android:attr/textColorPrimary"
+            android:textColorHint="@color/dark_text_secondary"
+            />
     </LinearLayout>
 
     <TextView
         android:id="@+id/signin_forgot_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="25dp"
         android:fontFamily="@font/quicksand_bold"
         android:text="Forgot Password?"
-        android:textColor="@color/main_text_color"
+        android:textColor="@color/primaryPurple"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layoutPassword" />
@@ -137,18 +133,18 @@
         android:id="@+id/layoutSignUpLink"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutPassword">
+        app:layout_constraintTop_toBottomOf="@id/signin_forgot_password">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="Don't have an account? "
-            android:textColor="@color/text_color" />
+            android:textColor="?android:attr/textColorSecondary" />
 
         <TextView
             android:id="@+id/signin_signup_txt"
@@ -156,42 +152,33 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/quicksand_bold"
             android:text="Sign Up"
-            android:textColor="@color/text_color_cream" />
+            android:textColor="@color/primaryPurple" />
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/signin_btn_signin"
         android:layout_width="300dp"
-        android:layout_height="55dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="50dp"
         android:background="@drawable/button_bg_purple"
+        android:backgroundTint="@color/primaryPurple"
         android:fontFamily="@font/quicksand_bold"
         android:text="Sign In"
         android:textAllCaps="false"
-        android:textColor="@color/btn_text_color"
-        android:textSize="25sp"
+        android:textColor="@color/white"
+        android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/ic_bottom_triangle"
-        android:layout_width="25dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="110dp"
-        android:layout_marginBottom="120dp"
-        android:rotation="-102"
-        android:src="@drawable/ic_triangle_shape"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <View
         android:layout_width="297dp"
         android:layout_height="295dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="200dp"
+        android:layout_marginBottom="-100dp"
         android:background="@drawable/bg_circle_soft"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_bottom_triangle" />
+        android:alpha="0.1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
