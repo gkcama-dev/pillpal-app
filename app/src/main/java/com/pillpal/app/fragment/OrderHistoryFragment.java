@@ -56,8 +56,6 @@ public class OrderHistoryFragment extends Fragment {
         orderList = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
 
-//        uploadSampleDataToFirebase();
-
         loadOrdersFromFirestore();
 
         return view;
@@ -74,6 +72,7 @@ public class OrderHistoryFragment extends Fragment {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     orderList.clear();
                     orderList.addAll(queryDocumentSnapshots.toObjects(Order.class));
+
                     updateUI();
                 });
     }
@@ -85,37 +84,27 @@ public class OrderHistoryFragment extends Fragment {
         } else {
             tvNoOrders.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
-            adapter = new OrderAdapter(orderList);
+
+            // Adapter එක සාදන විට click listener එක ලබා දීම
+            adapter = new OrderAdapter(orderList, order -> {
+
+                // Order details පෙන්වන fragment එකට යාම
+                OrderDetailFragment detailFragment = new OrderDetailFragment();
+
+                // අවශ්‍ය නම් තෝරාගත් order එකේ දත්ත bundle එකක් හරහා යැවිය හැක
+                Bundle bundle = new Bundle();
+                bundle.putString("orderId", order.getOrderId()); // Order model එකේ ඇති ID එක
+                detailFragment.setArguments(bundle);
+
+                getParentFragmentManager().beginTransaction()
+                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
+                                android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+                        .replace(R.id.fragment_container, detailFragment)
+                        .addToBackStack(null) // Back පැමිණීමට මෙය අනිවාර්යයි
+                        .commit();
+            });
             recyclerView.setAdapter(adapter);
         }
     }
 
-    private void uploadSampleDataToFirebase() {
-        List<Order> sampleOrders = new ArrayList<>();
-        String currentUserId = FirebaseAuth.getInstance().getUid();
-
-        if (currentUserId == null) {
-            Toast.makeText(getContext(), "User not logged in!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-
-        sampleOrders.add(new Order("ORD-88219", "Pending", "2026-03-05", "1,450.00", currentUserId));
-        sampleOrders.add(new Order("ORD-77102", "Delivered", "2026-02-28", "2,100.00", currentUserId));
-        sampleOrders.add(new Order("ORD-65431", "Cancelled", "2026-02-15", "850.00", currentUserId));
-
-        for (Order order : sampleOrders) {
-            db.collection("orders")
-                    .document(order.getOrderId())
-                    .set(order)
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d("Firebase", "Order added: " + order.getOrderId());
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Firebase", "Error adding order", e);
-                    });
-        }
-
-        Toast.makeText(getContext(), "Sample data uploaded!", Toast.LENGTH_SHORT).show();
-    }
 }

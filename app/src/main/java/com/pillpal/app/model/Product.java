@@ -1,5 +1,7 @@
 package com.pillpal.app.model;
 
+import com.google.firebase.Timestamp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +18,5 @@ public class Product {
     private String imageUrl;
     private String categoryId;
     private String description;
+    private Timestamp timestamp;
 }

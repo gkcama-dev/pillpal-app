@@ -1,139 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground"
-    android:padding="16dp"
-    android:scrollbars="none">
+    android:background="?android:attr/windowBackground">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/btn_next_step"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="5dp"
+        android:scrollbars="none">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/quicksand_bold"
-            android:text="Upload Prescription"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="18sp" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_upload_prescription"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:layout_marginTop="12dp"
-            app:cardCornerRadius="12dp"
-            app:strokeColor="@color/primaryPurple"
-            app:strokeWidth="1dp"
-            app:cardBackgroundColor="?attr/colorSurface"> <LinearLayout
-            android:id="@+id/layout_upload_placeholder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/medication"
-                app:tint="@color/primaryPurple" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="Upload Prescription"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="20sp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_upload_prescription"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/primaryPurple"
+                app:strokeWidth="1.5dp"
+                app:cardBackgroundColor="?attr/colorSurface">
+
+                <LinearLayout
+                    android:id="@+id/layout_upload_placeholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/medication"
+                        app:tint="@color/primaryPurple" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/quicksand_semibold"
+                        android:text="Tap to upload prescription image"
+                        android:textColor="@color/primaryPurple" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/img_prescription_preview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/quicksand_bold"
+                android:text="Additional Notes (Optional)"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/et_order_notes"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/custom_input_search"
+                android:backgroundTint="?attr/colorSurface"
+                android:gravity="top"
+                android:hint="Special instructions for pharmacist..."
+                android:padding="16dp"
                 android:fontFamily="@font/quicksand_semibold"
-                android:text="Click to upload prescription image"
-                android:textColor="?android:attr/textColorSecondary" />
-        </LinearLayout>
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="14sp" />
 
-            <ImageView
-                android:id="@+id/img_prescription_preview"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:fontFamily="@font/quicksand_bold"
-            android:text="Delivery Location"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="18sp" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_marginTop="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardBackgroundColor="?attr/colorSurface">
-
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/map_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#44000000" />
-
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/button_bg_purple"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:text="Select on Map"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:fontFamily="@font/quicksand_bold" />
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_availability_chip"
+                android:backgroundTint="#129C27B0"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:fontFamily="@font/quicksand_bold"
-            android:text="Additional Notes (Optional)"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="18sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/quicksand_bold"
+                    android:text="Important Instructions:"
+                    android:textColor="@color/primaryPurple"
+                    android:textSize="14sp" />
 
-        <EditText
-            android:id="@+id/et_order_notes"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/custom_input_search"
-            android:backgroundTint="?attr/colorSurface"
-            android:fontFamily="@font/quicksand_semibold"
-            android:gravity="top"
-            android:hint="Any special instructions for the pharmacist..."
-            android:padding="12dp"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textColorHint="?android:attr/textColorSecondary"
-            android:textSize="14sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/list_alt"
+                        app:tint="@color/primaryPurple" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/quicksand_semibold"
+                        android:text="Prescription must be clear and readable."
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_submit_order"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="24dp"
-            android:fontFamily="@font/quicksand_bold"
-            android:text="Submit Order Request"
-            android:textSize="18sp"
-            app:cornerRadius="12dp"
-            android:backgroundTint="@color/primaryPurple"
-            android:textColor="@color/white" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/call"
+                        app:tint="@color/primaryPurple" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/quicksand_semibold"
+                        android:text="Pharmacist will call you for verification."
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
-    </LinearLayout>
-</ScrollView>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/request_quote"
+                        app:tint="@color/primaryPurple" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/quicksand_semibold"
+                        android:text="Total price will be sent after review."
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="20dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_next_step"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        android:backgroundTint="@color/primaryPurple"
+        android:fontFamily="@font/quicksand_bold"
+        android:text="Next: Select Location"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:cornerRadius="16dp"
+        app:elevation="4dp" />
+
+</RelativeLayout>

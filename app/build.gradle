@@ -52,4 +52,7 @@ dependencies {
 
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
+
+    implementation libs.lifecycle.viewmodel
+    implementation libs.lifecycle.livedata
 }
