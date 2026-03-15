@@ -1,5 +1,6 @@
 package com.pillpal.app.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,18 +8,17 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.pillpal.app.R;
+
 import com.pillpal.app.adapter.ProductAdapter;
 import com.pillpal.app.databinding.FragmentProductListBinding;
-import com.pillpal.app.model.Product;
-import java.util.List;
+import com.pillpal.app.viewModel.ProductViewModel;
 
 public class ProductListFragment extends Fragment {
     private FragmentProductListBinding binding;
     private String categoryId;
-    private FirebaseFirestore db;
+    private ProductViewModel viewModel;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,26 +37,30 @@ public class ProductListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        db = FirebaseFirestore.getInstance();
+
+        viewModel = new ViewModelProvider(this).get(ProductViewModel.class);
+
         binding.recyclerViewListing.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        loadProducts();
-    }
 
-    private void loadProducts() {
-        if (categoryId == null) return;
+        // Initialize adapter with Context
+        ProductAdapter adapter = new ProductAdapter(getContext());
+        binding.recyclerViewListing.setAdapter(adapter);
 
-        db.collection("products")
-                .whereEqualTo("categoryId", categoryId) // Filter logic
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (binding == null || !isAdded()) return;
+        if (categoryId != null) {
+            viewModel.fetchProducts(categoryId);
+        }
 
-                    List<Product> productList = queryDocumentSnapshots.toObjects(Product.class);
-                    ProductAdapter adapter = new ProductAdapter(productList, product -> {
-                        // Product Details Activity එකට යාම මෙහි ලියන්න
-                    });
-                    binding.recyclerViewListing.setAdapter(adapter);
+        viewModel.getProducts().observe(getViewLifecycleOwner(), productList -> {
+            if (productList != null && binding != null) {
+                // Update data using the new method
+                adapter.setProductList(productList);
+
+                // Handle clicks if needed
+                adapter.setOnProductClickListener(product -> {
+                    // Navigate to Product Detail Fragment
                 });
+            }
+        });
     }
 
     @Override
