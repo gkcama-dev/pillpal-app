@@ -15,6 +15,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // Token send to Manifest
+        resValue "string", "mapbox_access_token", project.findProperty("MAPBOX_PUBLIC_TOKEN") ?: ""
     }
 
     buildTypes {
@@ -55,4 +58,10 @@ dependencies {
 
     implementation libs.lifecycle.viewmodel
     implementation libs.lifecycle.livedata
+
+    implementation libs.okhttp3.okhttp
+    
+    implementation 'com.mapbox.maps:android:10.16.1'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
 }

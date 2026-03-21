@@ -37,7 +37,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/quicksand_bold"
-                        android:text="Hello, Lakshitha 👋"
+                        android:text="Hello, Geeth 👋"
                         android:textColor="@color/white"
                         android:textSize="24sp" />
 
@@ -66,15 +66,15 @@
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/iv_profile_avatar"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:layout_alignParentEnd="true"
                     android:elevation="4dp"
                     android:padding="2dp"
                     android:src="@drawable/avatar"
+                    android:scaleType="centerCrop"
                     app:shapeAppearanceOverlay="@style/CircleImage"
-                    app:strokeColor="@color/white"
-                    app:strokeWidth="2dp" />
+                    />
             </RelativeLayout>
 
             <LinearLayout

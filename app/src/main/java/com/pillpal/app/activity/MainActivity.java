@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +114,15 @@ public class MainActivity extends AppCompatActivity
                 updateNavigationSelection(currentFragment);
             }
         });
+
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
     }
 
     @Override
@@ -137,6 +148,13 @@ public class MainActivity extends AppCompatActivity
 
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null && intent.getBooleanExtra("GO_TO_HISTORY", false)) {
+            loadFragment(new OrderHistoryFragment());
+            binding.bottomNavigationView.setSelectedItemId(R.id.bottom_nav_order_history);
+        }
     }
 
     private void loadFragment(Fragment fragment) {

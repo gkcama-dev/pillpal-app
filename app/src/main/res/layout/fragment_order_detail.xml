@@ -35,7 +35,7 @@
                     android:layout_gravity="center"
                     android:fontFamily="@font/quicksand_bold"
                     android:text="#ORD-000000"
-                    android:textColor="#121212"
+                    android:textColor="?android:attr/textColorSecondary"
                     android:textSize="20sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

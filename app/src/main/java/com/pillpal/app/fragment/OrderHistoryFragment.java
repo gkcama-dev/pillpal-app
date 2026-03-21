@@ -2,7 +2,10 @@ package com.pillpal.app.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.pillpal.app.R;
 import com.pillpal.app.adapter.OrderAdapter;
 import com.pillpal.app.model.Order;
+import com.pillpal.app.viewModel.OrderViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,22 +30,16 @@ public class OrderHistoryFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private OrderAdapter adapter;
-    private List<Order> orderList;
-    private TextView tvNoOrders;
-    private FirebaseFirestore db;
+    private OrderViewModel orderViewModel;
 
 
     public OrderHistoryFragment() {
-
     }
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
     }
 
     @Override
@@ -50,61 +48,62 @@ public class OrderHistoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_order_history, container, false);
 
         recyclerView = view.findViewById(R.id.recycler_view_orders);
-        tvNoOrders = view.findViewById(R.id.tv_no_orders);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        orderList = new ArrayList<>();
-        db = FirebaseFirestore.getInstance();
-
-        loadOrdersFromFirestore();
-
         return view;
     }
 
 
-    private void loadOrdersFromFirestore() {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // ViewModel Initialize
+        orderViewModel = new ViewModelProvider(this).get(OrderViewModel.class);
+
+        // User UID -> fetchOrders Call
         String uid = FirebaseAuth.getInstance().getUid();
-        if (uid == null) return;
+        if (uid != null) {
+            orderViewModel.fetchOrders(uid);
+        }
 
-        db.collection("orders")
-                .whereEqualTo("userId", uid)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    orderList.clear();
-                    orderList.addAll(queryDocumentSnapshots.toObjects(Order.class));
+        // ViewModel Data Observe (Real-time Update)
+        orderViewModel.getOrdersLiveData().observe(getViewLifecycleOwner(), orders -> {
+            if (orders == null || orders.isEmpty()) {
+                view.findViewById(R.id.recycler_view_orders).setVisibility(View.GONE);
+                view.findViewById(R.id.layout_empty_state).setVisibility(View.VISIBLE);
+            } else {
+                view.findViewById(R.id.layout_empty_state).setVisibility(View.GONE);
+                view.findViewById(R.id.recycler_view_orders).setVisibility(View.VISIBLE);
+                setupAdapter(orders);
+            }
+        });
 
-                    updateUI();
-                });
+        // Error
+        orderViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void updateUI() {
-        if (orderList.isEmpty()) {
-            tvNoOrders.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            tvNoOrders.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
+    private void setupAdapter(java.util.List<com.pillpal.app.model.Order> orders) {
+        if (adapter == null) {
 
-            // Adapter එක සාදන විට click listener එක ලබා දීම
-            adapter = new OrderAdapter(orderList, order -> {
-
-                // Order details පෙන්වන fragment එකට යාම
+            adapter = new OrderAdapter(orders, order -> {
                 OrderDetailFragment detailFragment = new OrderDetailFragment();
-
-                // අවශ්‍ය නම් තෝරාගත් order එකේ දත්ත bundle එකක් හරහා යැවිය හැක
                 Bundle bundle = new Bundle();
-                bundle.putString("orderId", order.getOrderId()); // Order model එකේ ඇති ID එක
+                bundle.putString("orderId", order.getOrderId());
                 detailFragment.setArguments(bundle);
 
+                // Animation රහිතව පිරිසිදු Fragment Transition එකක්
                 getParentFragmentManager().beginTransaction()
-                        .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
-                                android.R.anim.slide_in_left, android.R.anim.slide_out_right)
                         .replace(R.id.fragment_container, detailFragment)
-                        .addToBackStack(null) // Back පැමිණීමට මෙය අනිවාර්යයි
+                        .addToBackStack(null)
                         .commit();
             });
             recyclerView.setAdapter(adapter);
+        } else {
+            adapter.updateList(orders);
         }
     }
-
 }

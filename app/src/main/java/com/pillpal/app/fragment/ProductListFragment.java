@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.pillpal.app.adapter.ProductAdapter;
 import com.pillpal.app.databinding.FragmentProductListBinding;
+import com.pillpal.app.model.Product;
 import com.pillpal.app.viewModel.ProductViewModel;
 
 public class ProductListFragment extends Fragment {
@@ -62,6 +63,7 @@ public class ProductListFragment extends Fragment {
             }
         });
     }
+
 
     @Override
     public void onDestroyView() {

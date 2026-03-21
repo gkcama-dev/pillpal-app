@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/windowBackground"
@@ -13,7 +13,7 @@
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_marginBottom="24dp"
-        android:src="@drawable/login"
+        android:src="@drawable/success"
         app:tint="@color/primaryPurple" />
 
     <TextView
@@ -48,12 +48,16 @@
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_view_history"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="30dp"
         android:layout_marginTop="40dp"
+        android:layout_marginEnd="30dp"
         android:backgroundTint="@color/primaryPurple"
         android:fontFamily="@font/quicksand_bold"
         android:text="View Order History"
-        app:cornerRadius="12dp" />
+        android:textAllCaps="false"
+        app:cornerRadius="16dp"
+        app:elevation="4dp" />
 
     <TextView
         android:id="@+id/btn_go_home"
