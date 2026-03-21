@@ -1,8 +1,11 @@
 package com.pillpal.app.fragment;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -10,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.pillpal.app.R;
 import com.pillpal.app.activity.SelectLocationActivity;
@@ -17,6 +21,8 @@ import com.pillpal.app.databinding.FragmentOrderRequestBinding;
 
 
 public class OrderRequestFragment extends Fragment {
+
+    private Uri imageUri;
 
     private FragmentOrderRequestBinding binding;
 
@@ -40,13 +46,38 @@ public class OrderRequestFragment extends Fragment {
         return binding.getRoot();
     }
 
+    private final ActivityResultLauncher<String> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    imageUri = uri;
+                    binding.imgPrescriptionPreview.setImageURI(uri);
+                    binding.imgPrescriptionPreview.setVisibility(View.VISIBLE);
+                    binding.layoutUploadPlaceholder.setVisibility(View.GONE);
+                }
+            }
+    );
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Image එක තෝරා ගැනීමට click listener
+        binding.cardUploadPrescription.setOnClickListener(v -> galleryLauncher.launch("image/*"));
+
         // Next Step Button click -> SelectLocationActivity
         binding.btnNextStep.setOnClickListener(v -> {
+            if (imageUri == null) {
+                Toast.makeText(getContext(), "Please upload your prescription first!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String notes = binding.etOrderNotes.getText().toString().trim();
+
+            // Location Activity එකට data යැවීම
             Intent intent = new Intent(getContext(), SelectLocationActivity.class);
+            intent.putExtra("ORDER_NOTES", notes);
+            intent.putExtra("PRESCRIPTION_URI", imageUri.toString());
             startActivity(intent);
         });
     }

@@ -15,4 +15,7 @@ public class User {
     private String email;
     private String mobile;
     private String profileImageUrl;
+    private String address;
+    private String nic;
+    private String emergencyContact;
 }

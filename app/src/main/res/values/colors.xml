@@ -13,15 +13,16 @@
     <color name="light_text_primary">#48464C</color>
     <color name="light_text_secondary">#666666</color>
 
-    <color name="dark_bg_main">#1A1A1E</color>
-    <color name="dark_bg_secondary">#252529</color>
+    <color name="dark_bg_main">#333338</color>
+    <color name="dark_bg_secondary">#343438</color>
     <color name="dark_nav_header">#6C5CE7</color>
     <color name="dark_text_primary">#FFFFFF</color>
-    <color name="dark_text_secondary">#252529</color>
-    <color name="dark_input_bg">#2A2A2A</color>
+    <color name="dark_text_secondary">#2F2F31</color>
+    <color name="dark_input_bg">#373636</color>
 
     <color name="orange">#FF9800</color>
     <color name="green">#4CAF50</color>
     <color name="red">#F44336</color>
     <color name="gray">#9E9E9E</color>
+    <color name="blue">#2962FF</color>
 </resources>

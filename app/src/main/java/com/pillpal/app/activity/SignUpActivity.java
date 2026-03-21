@@ -80,7 +80,13 @@ public class SignUpActivity extends AppCompatActivity {
                                 User user = User.builder()
                                         .uid(uid)
                                         .name(name)
-                                        .email(email).build();
+                                        .email(email)
+                                        .mobile("")
+                                        .profileImageUrl("")
+                                        .address("")
+                                        .nic("")
+                                        .emergencyContact("")
+                                        .build();
 
                                 firebaseFirestore.collection("users")
                                         .document(uid)

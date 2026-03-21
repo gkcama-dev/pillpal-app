@@ -9,4 +9,6 @@
     <string name="profile">Profile</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiZ2VldGhrYWxoYXJhLTI3IiwiYSI6ImNtbXVlYTVrMzF6YXkycnF4Mm9hYnNkOTcifQ.g_yVL5e0DowONA02Db6d_A</string>
+
 </resources>

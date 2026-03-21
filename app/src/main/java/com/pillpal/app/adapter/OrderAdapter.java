@@ -41,17 +41,17 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
         Order order = orderList.get(position);
-
         holder.orderId.setText("#" + order.getOrderId());
         holder.date.setText("Date: " + order.getDate());
         holder.status.setText(order.getStatus());
 
+        // Default values
         holder.total.setVisibility(View.GONE);
-        holder.btnMarkReceived.setVisibility(View.GONE);
         holder.btnPayNow.setVisibility(View.GONE);
+        holder.btnMarkReceived.setVisibility(View.GONE);
 
-        String status = (order.getStatus() != null) ? order.getStatus() : "";
-
+        String status = (order.getStatus() != null) ? order.getStatus() : "Pending";
+        holder.status.setText(status);
 
         switch (status) {
             case "Pending":
@@ -60,46 +60,42 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
             case "Approved":
                 holder.status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.green)));
-
                 holder.total.setVisibility(View.VISIBLE);
                 holder.total.setText("Total Amount: LKR " + order.getTotal());
-
                 holder.btnPayNow.setVisibility(View.VISIBLE);
-                holder.btnPayNow.setOnClickListener(v -> {
-                    Toast.makeText(holder.itemView.getContext(), "Opening Payment for: " + order.getOrderId(), Toast.LENGTH_SHORT).show();
-                    // Payment Logic here
-                });
+                break;
+
+            case "Payment Done":
+                holder.status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.blue))); // Blue for payment success
+                holder.total.setVisibility(View.VISIBLE);
+                holder.total.setText("Total Paid: LKR " + order.getTotal());
+                break;
+
+            case "Accepted":
+                holder.status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.primaryPurple)));
+                break;
+
+            case "Delivered":
+                holder.status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.green)));
+                holder.btnMarkReceived.setVisibility(View.VISIBLE);
                 break;
 
             case "Rejected":
                 holder.status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.red)));
                 break;
-
-            case "Delivered":
-                holder.status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.primaryPurple)));
-                holder.btnMarkReceived.setVisibility(View.VISIBLE);
-
-                holder.btnMarkReceived.setOnClickListener(v -> {
-                    Toast.makeText(holder.itemView.getContext(), "Order Recived: " + order.getOrderId(), Toast.LENGTH_SHORT).show();
-                    // Firebase Update Logic
-                });
-
-                break;
-
-            default:
-                holder.status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.gray)));
-                break;
         }
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onOrderClick(order);
-            }
-        });
+
+        holder.itemView.setOnClickListener(v -> listener.onOrderClick(order));
     }
 
     @Override
     public int getItemCount() {
         return orderList.size();
+    }
+
+    public void updateList(List<Order> newList) {
+        this.orderList = newList;
+        notifyDataSetChanged();
     }
 
     public static class OrderViewHolder extends RecyclerView.ViewHolder {
