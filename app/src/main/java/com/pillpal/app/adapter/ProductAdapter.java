@@ -2,9 +2,12 @@ package com.pillpal.app.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -53,6 +56,41 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.name.setText(product.getName());
         holder.price.setText("LKR " + product.getPrice());
 
+        String status = product.getStatus();
+        if (status == null || status.isEmpty()) {
+            status = "In Stock"; // Default value
+        }
+
+        holder.btnAvailable.setClickable(false);
+        holder.btnAvailable.setFocusable(false);
+        
+        holder.btnAvailable.setText(status);
+
+        switch (status) {
+            case "In Stock":
+                holder.btnAvailable.setText("Available");
+                holder.btnAvailable.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#8E8FFA")));
+                holder.btnAvailable.setEnabled(true);
+                break;
+
+            case "Low Stock":
+                holder.btnAvailable.setText("Low Stock");
+                holder.btnAvailable.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFA500"))); // Orange
+                holder.btnAvailable.setEnabled(true);
+                break;
+
+            case "Out of Stock":
+                holder.btnAvailable.setText("Out of Stock");
+                holder.btnAvailable.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#EF4444"))); // Red
+                holder.btnAvailable.setEnabled(false); // Disable interaction
+                break;
+
+            default:
+                holder.btnAvailable.setText("Available");
+                holder.btnAvailable.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#8E8FFA")));
+                break;
+        }
+
         // Handling image loading with Glide
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
             Glide.with(context)
@@ -94,12 +132,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView name, price;
         ImageView image;
+        Button btnAvailable;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.item_product_recycler_name);
             price = itemView.findViewById(R.id.item_product_recycler_price);
             image = itemView.findViewById(R.id.item_product_recycler_image);
+            btnAvailable = itemView.findViewById(R.id.btn_add_request);
         }
     }
 

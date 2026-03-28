@@ -86,6 +86,7 @@ public class SignUpActivity extends AppCompatActivity {
                                         .address("")
                                         .nic("")
                                         .emergencyContact("")
+                                        .fcmToken(null)
                                         .build();
 
                                 firebaseFirestore.collection("users")

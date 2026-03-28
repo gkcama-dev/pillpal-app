@@ -9,7 +9,7 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:mapbox_resourcesAccessToken="your_public_token_here" />
+        app:mapbox_resourcesAccessToken="pk.eyJ1IjoiZ2VldGhrYWxoYXJhLTI3IiwiYSI6ImNtbXVlYTVrMzF6YXkycnF4Mm9hYnNkOTcifQ.g_yVL5e0DowONA02Db6d_A" />
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="wrap_content"

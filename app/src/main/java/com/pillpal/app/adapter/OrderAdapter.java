@@ -1,5 +1,6 @@
 package com.pillpal.app.adapter;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.pillpal.app.R;
 import com.pillpal.app.model.Order;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
 
@@ -63,6 +67,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                 holder.total.setVisibility(View.VISIBLE);
                 holder.total.setText("Total Amount: LKR " + order.getTotal());
                 holder.btnPayNow.setVisibility(View.VISIBLE);
+
                 break;
 
             case "Payment Done":
@@ -78,6 +83,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
             case "Delivered":
                 holder.status.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(holder.itemView.getContext(), R.color.green)));
                 holder.btnMarkReceived.setVisibility(View.VISIBLE);
+
+                holder.btnMarkReceived.setOnClickListener(v -> {
+                    updateOrderStatusToReceived(order.getOrderId(), holder.itemView.getContext());
+                });
                 break;
 
             case "Rejected":
@@ -113,4 +122,20 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         }
     }
 
+    private void updateOrderStatusToReceived(String orderId, Context context) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", "Received");
+        updates.put("receivedTimestamp", com.google.firebase.Timestamp.now()); // DB එකේ නැති නිසා මෙතැනදී අලුතින්ම හැදේ
+
+        db.collection("orders").document(orderId)
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "Order marked as Received!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Update failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
 }

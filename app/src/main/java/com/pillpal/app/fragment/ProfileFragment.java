@@ -51,6 +51,14 @@ public class ProfileFragment extends Fragment {
     private final String IMGBB_API_KEY = "2957bdbd2622b55cf85dc26cb4ea002d";
 
 
+    private final ActivityResultLauncher<String> profileImageLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            uri -> {
+                if (uri != null) {
+                    uploadImageToImgBB(uri);
+                }
+            }
+    );
 
     public ProfileFragment() {
     }
@@ -88,7 +96,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        // දත්ත වෙනස් වන විට UI එක Update කිරීම
+        // UI Update When Update Data
         viewModel.getUserLiveData().observe(getViewLifecycleOwner(), user -> {
             if (user != null && binding != null) {
                 binding.etProfileFullName.setText(user.getName());
@@ -117,17 +125,12 @@ public class ProfileFragment extends Fragment {
 
     private void setupListeners() {
         // Image Picking
-        binding.profileImageLarge.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            startActivityForResult(intent, 101);
-        });
+        binding.profileImageLarge.setOnClickListener(v -> profileImageLauncher.launch("image/*"));
 
         // Update Button
         binding.btnUpdateProfile.setOnClickListener(v -> {
 
             if (validateInputs()) {
-
                 // Validation
                 binding.btnUpdateProfile.setEnabled(false);
 
@@ -180,15 +183,6 @@ public class ProfileFragment extends Fragment {
 
         return true;
     }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 101 && resultCode == Activity.RESULT_OK && data != null) {
-            uploadImageToImgBB(data.getData());
-        }
-    }
-
 
     // ImgBB Upload Logic (Multipart)
     private void uploadImageToImgBB(Uri imageUri) {

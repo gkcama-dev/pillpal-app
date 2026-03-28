@@ -1,6 +1,7 @@
 package com.pillpal.app.adapter;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -44,10 +45,21 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
                 .into(holder.binding.categoryImage);
 
         holder.itemView.setOnClickListener(v -> {
-            Animation animation = AnimationUtils.loadAnimation(v.getContext(), R.anim.click_animation);
-            v.startAnimation(animation);
-            if (listener != null) listener.onCategoryClick(category);
+            performClickAction(v, category);
         });
+
+        // Explore Button
+        holder.binding.btnExploreCategory.setOnClickListener(v -> {
+            performClickAction(v, category);
+        });
+    }
+
+    private void performClickAction(View v, Category category) {
+        Animation animation = AnimationUtils.loadAnimation(v.getContext(), R.anim.click_animation);
+        v.startAnimation(animation);
+        if (listener != null) {
+            listener.onCategoryClick(category);
+        }
     }
 
     @Override

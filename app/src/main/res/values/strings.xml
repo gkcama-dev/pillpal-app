@@ -10,5 +10,16 @@
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
     <string name="mapbox_access_token">pk.eyJ1IjoiZ2VldGhrYWxoYXJhLTI3IiwiYSI6ImNtbXVlYTVrMzF6YXkycnF4Mm9hYnNkOTcifQ.g_yVL5e0DowONA02Db6d_A</string>
+    <string name="recent_products">Recent Products</string>
+    <string name="see_all">See All</string>
+    <string name="pharmacy">Pharmacy</string>
+    <string name="find_on_map">Find on map</string>
+    <string name="call_us">Call Us</string>
+    <string name="_24_7_hotline">24/7 Hotline</string>
+    <string name="upload_image_amp_get_quote"><![CDATA[Upload image & get quote]]></string>
+    <string name="order_with_prescription">Order with Prescription</string>
+    <string name="hello_geeth">Hello, .... 👋</string>
+    <string name="health_at_your_fingertips">Health at your fingertips</string>
+    <string name="your_trusted_medicine_companion">Your trusted medicine companion</string>
 
 </resources>

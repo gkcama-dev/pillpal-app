@@ -16,12 +16,17 @@ import com.google.firebase.Timestamp;
 @NoArgsConstructor
 public class Order {
     private String orderId;
+    private String userId;
     private String status;
     private String date;
-    private String total;
+    private Double total;
     private Timestamp pendingTimestamp;
     private Timestamp approvedTimestamp;
     private Timestamp paymentTimestamp;
     private Timestamp acceptedTimestamp;
     private Timestamp deliveredTimestamp;
+    private String prescriptionUrl;
+    private double latitude;
+    private double longitude;
+    private Timestamp receivedTimestamp;
 }

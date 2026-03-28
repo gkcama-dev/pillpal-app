@@ -6,7 +6,7 @@
     <color name="accentBlue">#3F51B5</color>
 
     <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
+    <color name="black">#2F2E2E</color>
     <color name="textGray">#666666</color>
 
     <color name="light_bg">#F8F9FA</color>
@@ -14,7 +14,7 @@
     <color name="light_text_secondary">#666666</color>
 
     <color name="dark_bg_main">#333338</color>
-    <color name="dark_bg_secondary">#343438</color>
+    <color name="dark_bg_secondary">#37373A</color>
     <color name="dark_nav_header">#6C5CE7</color>
     <color name="dark_text_primary">#FFFFFF</color>
     <color name="dark_text_secondary">#2F2F31</color>

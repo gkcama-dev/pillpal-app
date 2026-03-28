@@ -4,6 +4,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -49,6 +51,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import android.net.Uri;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class SelectLocationActivity extends AppCompatActivity {
@@ -227,12 +231,28 @@ public class SelectLocationActivity extends AppCompatActivity {
         });
     }
 
+    // 🔥 1. Latitude/Longitude -> Address -> Helper
+    private String getAddressFromLocation(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                return addresses.get(0).getAddressLine(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Address not found";
+    }
+
     private void submitOrderToFirestore(String prescriptionImageUrl) {
         String uid = FirebaseAuth.getInstance().getUid();
         String notes = getIntent().getStringExtra("ORDER_NOTES");
         String customOrderId = "ORD-" + (int)(Math.random() * 100000);
 
         binding.btnConfirmOrder.setText("Finalizing Order...");
+
+        String readableAddress = getAddressFromLocation(selectedPoint.latitude(), selectedPoint.longitude());
 
         Map<String, Object> orderData = new HashMap<>();
         orderData.put("orderId", customOrderId);
@@ -243,12 +263,14 @@ public class SelectLocationActivity extends AppCompatActivity {
         orderData.put("paymentTimestamp", null);
         orderData.put("acceptedTimestamp", null);
         orderData.put("deliveredTimestamp", null);
-        orderData.put("total", "Pending");
+        orderData.put("total", Double.valueOf(0.0));
         orderData.put("date", new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date()));
         orderData.put("notes", notes);
         orderData.put("prescriptionUrl", prescriptionImageUrl); // ImgBB URL
         orderData.put("latitude", selectedPoint.latitude());
         orderData.put("longitude", selectedPoint.longitude());
+        orderData.put("address", readableAddress);
+        orderData.put("receivedTimestamp", null);
 
         FirebaseFirestore.getInstance().collection("orders")
                 .document(customOrderId)
@@ -257,7 +279,7 @@ public class SelectLocationActivity extends AppCompatActivity {
                     Toast.makeText(this, "Order Submitted Successfully!", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(SelectLocationActivity.this, OrderSuccessActivity.class);
 
-                    // අවශ්‍ය නම් Order ID එකත් ඊළඟ screen එකට යවන්න පුළුවන්
+                    // Order ID screen
                     intent.putExtra("ORDER_ID", customOrderId);
 
                     startActivity(intent);
