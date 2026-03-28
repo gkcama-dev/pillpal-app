@@ -1,15 +1,23 @@
 package com.pillpal.app.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -21,11 +29,14 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.pillpal.app.R;
 import com.pillpal.app.databinding.ActivityMainBinding;
 import com.pillpal.app.databinding.SideNavHeaderBinding;
 import com.pillpal.app.fragment.CategoryFragment;
 import com.pillpal.app.fragment.HomeFragment;
+import com.pillpal.app.fragment.NotificationFragment;
 import com.pillpal.app.fragment.OrderDetailFragment;
 import com.pillpal.app.fragment.OrderHistoryFragment;
 import com.pillpal.app.fragment.OrderRequestFragment;
@@ -44,11 +55,22 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth firebaseAuth;
     private FirebaseFirestore firebaseFirestore;
 
-
+    private ListenerRegistration notificationListener;
+    private static final int NOTIFICATION_PERMISSION_CODE = 101; //Request Code
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        android.content.SharedPreferences sharedPreferences = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
+        boolean isDarkMode = sharedPreferences.getBoolean("IsDarkMode", false);
+
+        if (isDarkMode) {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
         EdgeToEdge.enable(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -58,8 +80,12 @@ public class MainActivity extends AppCompatActivity
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        // Check user session
-        if (firebaseAuth.getCurrentUser() == null) {
+        // Check user session and FCM Token
+        if (firebaseAuth.getCurrentUser() != null) {
+            updateFCMToken();
+            askNotificationPermission(); // Ask Permission
+            listenForNotifications();
+        } else {
             navigateToSignIn();
             return;
         }
@@ -73,6 +99,10 @@ public class MainActivity extends AppCompatActivity
         // Setup Side Navigation Header
         View headerView = navigationView.getHeaderView(0);
         sideNavHeaderBinding = SideNavHeaderBinding.bind(headerView);
+
+        binding.btnNotification.setOnClickListener(v -> {
+            loadFragment(new NotificationFragment());
+        });
 
         // Setup Toolbar
         setSupportActionBar(toolbar);
@@ -116,6 +146,88 @@ public class MainActivity extends AppCompatActivity
         });
 
         handleIntent(getIntent());
+    }
+
+    /**
+     * Android 13+ Notification Permission
+     */
+    private void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_CODE);
+            }
+        }
+    }
+
+    /**
+     * Firestore Notifications
+     */
+    private void listenForNotifications() {
+        String uid = firebaseAuth.getUid();
+        if (uid == null) return;
+
+        if (notificationListener != null) notificationListener.remove();
+
+        notificationListener = firebaseFirestore.collection("notifications")
+                .whereEqualTo("userId", uid)
+                .whereEqualTo("isRead", false) // not read
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Log.e("Firestore", "Listen failed.", error);
+                        return;
+                    }
+
+                    if (value != null) {
+                        int count = value.size();
+                        if (count > 0) {
+                            binding.tvNotificationCount.setVisibility(View.VISIBLE);
+                            binding.tvNotificationCount.setText(String.valueOf(count));
+
+                            Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake_anim);
+                            binding.btnNotification.startAnimation(shake);
+                        } else {
+                            binding.tvNotificationCount.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * FCM Token Firestore Update
+     */
+    private void updateFCMToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+
+                    String token = task.getResult();
+                    String uid = firebaseAuth.getUid();
+
+                    if (uid != null && token != null) {
+                        firebaseFirestore.collection("users")
+                                .document(uid)
+                                .update("fcmToken", token)
+                                .addOnSuccessListener(aVoid -> Log.d("FCM", "Token Updated Successfully"))
+                                .addOnFailureListener(e -> Log.e("FCM", "Token Update Failed", e));
+                    }
+                });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == NOTIFICATION_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("FCM", "Notification Permission Granted");
+            } else {
+                Toast.makeText(this, "Notification permission denied. You won't receive order updates.", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override
@@ -199,6 +311,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateToolbarUI(Fragment fragment) {
+
         // Show Search Bar for specific fragments
         if (fragment instanceof CategoryFragment ||
                 fragment instanceof OrderHistoryFragment ||
@@ -234,6 +347,8 @@ public class MainActivity extends AppCompatActivity
                     binding.toolbarTitle.setText("Settings");
                 } else if (fragment instanceof OrderDetailFragment) {
                     binding.toolbarTitle.setText("Order Details");
+                }else if (fragment instanceof NotificationFragment) {
+                    binding.toolbarTitle.setText("Notifications");
                 }
             }
         }
@@ -246,8 +361,57 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void logoutUser() {
-        firebaseAuth.signOut();
-        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-        navigateToSignIn();
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+
+        com.pillpal.app.databinding.LayoutLogoutDialogBinding dialogBinding =
+                com.pillpal.app.databinding.LayoutLogoutDialogBinding.inflate(getLayoutInflater());
+
+        builder.setView(dialogBinding.getRoot());
+        builder.setCancelable(true);
+
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+        // Cancel
+        dialogBinding.btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        // Confirm Logout
+        dialogBinding.btnConfirmLogout.setOnClickListener(v -> {
+            dialog.dismiss();
+
+            // FCM Token Clear
+            clearFCMTokenAndLogout();
+        });
+
+        dialog.show();
+    }
+
+    // Logout Token
+    private void clearFCMTokenAndLogout() {
+        String uid = firebaseAuth.getUid();
+        if (uid != null) {
+            firebaseFirestore.collection("users").document(uid)
+                    .update("fcmToken", null) // Token null
+                    .addOnCompleteListener(task -> {
+                        firebaseAuth.signOut();
+                        Toast.makeText(MainActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+                        navigateToSignIn();
+                    });
+        } else {
+            firebaseAuth.signOut();
+            navigateToSignIn();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Remove Listener
+        if (notificationListener != null) {
+            notificationListener.remove();
+        }
     }
 }

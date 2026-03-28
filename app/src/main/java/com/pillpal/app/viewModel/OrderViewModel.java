@@ -18,10 +18,23 @@ public class OrderViewModel extends ViewModel {
     private final MutableLiveData<List<Order>> ordersLiveData = new MutableLiveData<>();
     private final MutableLiveData<Order> orderDetailLiveData = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Order> lastOrderLiveData = new MutableLiveData<>();
 
-    public LiveData<List<Order>> getOrdersLiveData() { return ordersLiveData; }
-    public LiveData<Order> getOrderDetailLiveData() { return orderDetailLiveData; }
-    public LiveData<String> getErrorMessage() { return errorMessage; }
+    public LiveData<Order> getLastOrderLiveData() {
+        return lastOrderLiveData;
+    }
+
+    public LiveData<List<Order>> getOrdersLiveData() {
+        return ordersLiveData;
+    }
+
+    public LiveData<Order> getOrderDetailLiveData() {
+        return orderDetailLiveData;
+    }
+
+    public LiveData<String> getErrorMessage() {
+        return errorMessage;
+    }
 
     public void fetchOrders(String uid) {
         Log.d("OrderViewModel", "Fetching orders for UID: " + uid);
@@ -36,9 +49,13 @@ public class OrderViewModel extends ViewModel {
                         return;
                     }
                     if (value != null) {
-                        List<Order> orders = value.toObjects(Order.class);
-                        Log.d("OrderViewModel", "Orders received. Count: " + orders.size());
-                        ordersLiveData.setValue(orders);
+                        try {
+                            List<Order> orders = value.toObjects(Order.class);
+                            ordersLiveData.setValue(orders);
+                        } catch (Exception e) {
+                            Log.e("OrderViewModel", "Mapping Error: " + e.getMessage());
+                            errorMessage.setValue("Data format error in Database!");
+                        }
                     }
                 });
     }
@@ -59,6 +76,21 @@ public class OrderViewModel extends ViewModel {
                         orderDetailLiveData.setValue(order);
                     } else {
                         Log.w("OrderViewModel", "Order document does not exist for ID: " + orderId);
+                    }
+                });
+    }
+
+    public void fetchLastOrder(String uid) {
+        db.collection("orders")
+                .whereEqualTo("userId", uid)
+                .orderBy("pendingTimestamp", Query.Direction.DESCENDING)
+                .limit(1) //Last One
+                .addSnapshotListener((value, error) -> {
+                    if (value != null && !value.isEmpty()) {
+                        List<Order> orders = value.toObjects(Order.class);
+                        if (!orders.isEmpty()) {
+                            lastOrderLiveData.setValue(orders.get(0));
+                        }
                     }
                 });
     }

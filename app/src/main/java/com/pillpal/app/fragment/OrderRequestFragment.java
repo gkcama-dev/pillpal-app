@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.pillpal.app.R;
 import com.pillpal.app.activity.SelectLocationActivity;
 import com.pillpal.app.databinding.FragmentOrderRequestBinding;
@@ -62,7 +63,7 @@ public class OrderRequestFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Image එක තෝරා ගැනීමට click listener
+        // Select Image Click Listener
         binding.cardUploadPrescription.setOnClickListener(v -> galleryLauncher.launch("image/*"));
 
         // Next Step Button click -> SelectLocationActivity
@@ -80,6 +81,23 @@ public class OrderRequestFragment extends Fragment {
             intent.putExtra("PRESCRIPTION_URI", imageUri.toString());
             startActivity(intent);
         });
+
+        // Get Home Image
+        if (getArguments() != null) {
+            String imageUriString = getArguments().getString("selected_image_uri");
+            if (imageUriString != null) {
+                imageUri = Uri.parse(imageUriString);
+
+                binding.layoutUploadPlaceholder.setVisibility(View.GONE);
+
+                binding.imgPrescriptionPreview.setVisibility(View.VISIBLE);
+
+                Glide.with(this)
+                        .load(imageUri)
+                        .centerCrop()
+                        .into(binding.imgPrescriptionPreview);
+            }
+        }
     }
 
     @Override

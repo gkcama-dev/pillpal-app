@@ -18,4 +18,5 @@ public class User {
     private String address;
     private String nic;
     private String emergencyContact;
+    private String fcmToken;
 }

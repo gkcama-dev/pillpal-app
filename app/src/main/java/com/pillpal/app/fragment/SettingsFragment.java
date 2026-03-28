@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -26,6 +28,9 @@ import com.pillpal.app.databinding.FragmentSettingsBinding;
 public class SettingsFragment extends Fragment {
 
     private FragmentSettingsBinding binding;
+    private android.hardware.SensorManager sensorManager;
+    private android.hardware.Sensor lightSensor;
+    private android.hardware.SensorEventListener lightEventListener;
 
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
             new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -79,6 +84,107 @@ public class SettingsFragment extends Fragment {
         });
 
         binding.btnLogout.setOnClickListener(v -> showLogoutConfirmation());
+
+        binding.swDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // Dark Mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                saveThemePreference(true);
+            } else {
+                // Light Mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                saveThemePreference(false);
+            }
+        });
+
+        binding.swAutoBrightness.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!android.provider.Settings.System.canWrite(requireContext())) {
+                        Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                        intent.setData(Uri.parse("package:" + requireContext().getPackageName()));
+                        startActivity(intent);
+                        binding.swAutoBrightness.setChecked(false);
+                    } else {
+                        startAutoBrightness();
+                        saveAutoBrightnessPreference(true);
+                    }
+                }
+            } else {
+                stopAutoBrightness();
+                saveAutoBrightnessPreference(false);
+            }
+        });
+    }
+
+    private void startAutoBrightness() {
+        sensorManager = (android.hardware.SensorManager) requireContext().getSystemService(android.content.Context.SENSOR_SERVICE);
+        lightSensor = sensorManager.getDefaultSensor(android.hardware.Sensor.TYPE_LIGHT);
+
+        if (lightSensor == null) {
+            Toast.makeText(getContext(), "Light sensor not available!", Toast.LENGTH_SHORT).show();
+            binding.swAutoBrightness.setChecked(false);
+            return;
+        }
+
+        lightEventListener = new android.hardware.SensorEventListener() {
+            @Override
+            public void onSensorChanged(android.hardware.SensorEvent event) {
+                float luxValue = event.values[0]; // natural light
+                setBrightness((int) luxValue);
+            }
+
+            @Override
+            public void onAccuracyChanged(android.hardware.Sensor sensor, int accuracy) {}
+        };
+
+        sensorManager.registerListener(lightEventListener, lightSensor, android.hardware.SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    private void setBrightness(int lux) {
+        // Lux 0-255 Brightness
+        int brightness = lux > 255 ? 255 : (lux < 10 ? 10 : lux);
+
+        android.provider.Settings.System.putInt(
+                requireContext().getContentResolver(),
+                android.provider.Settings.System.SCREEN_BRIGHTNESS,
+                brightness
+        );
+    }
+
+    private void stopAutoBrightness() {
+        if (sensorManager != null && lightEventListener != null) {
+            sensorManager.unregisterListener(lightEventListener);
+        }
+    }
+
+    private void saveAutoBrightnessPreference(boolean isEnabled) {
+        if (getContext() != null) {
+            android.content.SharedPreferences sharedPreferences =
+                    getContext().getSharedPreferences("AppPrefs", android.content.Context.MODE_PRIVATE);
+            android.content.SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("AutoBrightness", isEnabled);
+            editor.apply();
+        }
+    }
+
+    private void saveThemePreference(boolean isDarkMode) {
+        if (getContext() != null) {
+            android.content.SharedPreferences sharedPreferences =
+                    getContext().getSharedPreferences("ThemePrefs", android.content.Context.MODE_PRIVATE);
+            android.content.SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("IsDarkMode", isDarkMode);
+            editor.apply();
+        }
+    }
+
+    private boolean isDarkModeEnabled() {
+        if (getContext() != null) {
+            android.content.SharedPreferences sharedPreferences =
+                    getContext().getSharedPreferences("ThemePrefs", android.content.Context.MODE_PRIVATE);
+            return sharedPreferences.getBoolean("IsDarkMode", false);
+        }
+        return false;
     }
 
     private void updateSwitches() {
@@ -87,10 +193,32 @@ public class SettingsFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             binding.swNotification.setChecked(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED);
         }
-
         binding.swGps.setChecked(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
-
         binding.swCall.setChecked(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED);
+
+        // Dark Mode
+        binding.swDarkMode.setChecked(isDarkModeEnabled());
+
+        // Auto Brightness
+        android.content.SharedPreferences sharedPreferences =
+                getContext().getSharedPreferences("AppPrefs", android.content.Context.MODE_PRIVATE);
+        boolean isAutoEnabled = sharedPreferences.getBoolean("AutoBrightness", false);
+
+        binding.swAutoBrightness.setChecked(isAutoEnabled);
+
+        if (isAutoEnabled) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (android.provider.Settings.System.canWrite(requireContext())) {
+                    startAutoBrightness();
+                } else {
+
+                    binding.swAutoBrightness.setChecked(false);
+                    saveAutoBrightnessPreference(false);
+                }
+            } else {
+                startAutoBrightness();
+            }
+        }
     }
 
     private void showLogoutConfirmation() {
@@ -132,5 +260,13 @@ public class SettingsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (binding.swAutoBrightness.isChecked()) {
+            stopAutoBrightness();
+        }
     }
 }

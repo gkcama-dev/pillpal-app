@@ -23,7 +23,7 @@ import com.pillpal.app.R;
 
 public class SplashActivity extends AppCompatActivity {
 
-    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +35,13 @@ public class SplashActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        ProgressBar progressBar = findViewById(R.id.progressBar);
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
@@ -54,19 +61,12 @@ public class SplashActivity extends AppCompatActivity {
             );
         }
 
-        ProgressBar progressBar = findViewById(R.id.progressBar);
-        if (progressBar != null) {
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
 
             if (progressBar != null) {
                 progressBar.setVisibility(View.INVISIBLE);
             }
-
             FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-
             Intent intent;
             if (currentUser != null) {
                 // User is logged in -> Home
@@ -77,8 +77,9 @@ public class SplashActivity extends AppCompatActivity {
             }
 
             startActivity(intent);
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             finish();
-        }, 2000);
+        }, 3000);
 
     }
 }

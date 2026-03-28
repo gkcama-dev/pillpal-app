@@ -19,4 +19,5 @@ public class Product {
     private String categoryId;
     private String description;
     private Timestamp timestamp;
+    private String status;
 }

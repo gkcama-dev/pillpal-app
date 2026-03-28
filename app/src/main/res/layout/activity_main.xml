@@ -9,7 +9,6 @@
     tools:context=".activity.MainActivity">
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -79,17 +78,40 @@
                     app:layout_constraintStart_toEndOf="@+id/menu_icon"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/user_profile_image"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/logo"
-                    app:shapeAppearanceOverlay="@style/CircleImage"
-                    app:strokeColor="@color/primaryPurple"
+                <FrameLayout
+                    android:id="@+id/btn_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:padding="4dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/user_profile_image"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/logo"
+                        app:shapeAppearanceOverlay="@style/CircleImage"
+                        app:strokeColor="@color/primaryPurple"
+                        app:strokeWidth="1dp" />
+
+                    <TextView
+                        android:id="@+id/tv_notification_count"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="top|end"
+                        android:background="@drawable/bg_notification_badge"
+                        android:gravity="center"
+                        android:text="0"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:visibility="gone" />
+
+                </FrameLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
