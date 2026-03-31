@@ -38,7 +38,7 @@ public class OrderSuccessActivity extends AppCompatActivity {
 
         binding.btnViewHistory.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("GO_TO_HISTORY", true); // MainActivity එකට කියන්න History එක පෙන්වන්න කියලා
+            intent.putExtra("GO_TO_HISTORY", true);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();

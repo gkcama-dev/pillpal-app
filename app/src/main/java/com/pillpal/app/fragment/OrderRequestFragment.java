@@ -68,6 +68,12 @@ public class OrderRequestFragment extends Fragment {
 
         // Next Step Button click -> SelectLocationActivity
         binding.btnNextStep.setOnClickListener(v -> {
+
+            if (!isNetworkAvailable()) {
+                Toast.makeText(getContext(), "No Internet Connection! Please turn on Mobile Data or Wi-Fi to proceed.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             if (imageUri == null) {
                 Toast.makeText(getContext(), "Please upload your prescription first!", Toast.LENGTH_SHORT).show();
                 return;
@@ -75,7 +81,6 @@ public class OrderRequestFragment extends Fragment {
 
             String notes = binding.etOrderNotes.getText().toString().trim();
 
-            // Location Activity එකට data යැවීම
             Intent intent = new Intent(getContext(), SelectLocationActivity.class);
             intent.putExtra("ORDER_NOTES", notes);
             intent.putExtra("PRESCRIPTION_URI", imageUri.toString());
@@ -98,6 +103,24 @@ public class OrderRequestFragment extends Fragment {
                         .into(binding.imgPrescriptionPreview);
             }
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        android.net.ConnectivityManager connectivityManager = (android.net.ConnectivityManager)
+                requireContext().getSystemService(android.content.Context.CONNECTIVITY_SERVICE);
+
+        if (connectivityManager != null) {
+
+            android.net.NetworkCapabilities capabilities =
+                    connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+
+            if (capabilities != null) {
+                return capabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                        capabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_ETHERNET);
+            }
+        }
+        return false;
     }
 
     @Override

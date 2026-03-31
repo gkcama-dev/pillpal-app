@@ -26,7 +26,6 @@ public class MessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        // Notification එකක් ලැබුණාම මෙතනට එනවා
         if (remoteMessage.getNotification() != null) {
             String title = remoteMessage.getNotification().getTitle();
             String body = remoteMessage.getNotification().getBody();
@@ -34,7 +33,7 @@ public class MessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message Notification Title: " + title);
             Log.d(TAG, "Message Notification Body: " + body);
 
-            // Notification එක ජංගම දුරකථනයේ පෙන්වන්න
+
             showNotification(title, body);
         }
     }
@@ -44,7 +43,7 @@ public class MessagingService extends FirebaseMessagingService {
         super.onNewToken(token);
         Log.d(TAG, "Refreshed token: " + token);
 
-        // අලුත් Token එකක් ලැබුණු විට එය Firestore එකේ Update කරන්න
+
         updateTokenInFirestore(token);
     }
 
@@ -57,7 +56,7 @@ public class MessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.ic_notification) // ඔබේ App එකේ notification icon එකක් තියෙන්න ඕනේ
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
@@ -77,7 +76,7 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void updateTokenInFirestore(String token) {
-        // දැනට ලොග් වෙලා ඉන්න User ගේ ID එක අරගෙන token එක update කරන්න
+
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
             FirebaseFirestore.getInstance().collection("users").document(userId)

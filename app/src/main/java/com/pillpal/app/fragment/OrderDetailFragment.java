@@ -106,6 +106,13 @@ public class OrderDetailFragment extends Fragment {
                         order.getDeliveredTimestamp()
                 );
 
+                double itemsTotal = (order.getTotal() != null) ? order.getTotal() : 0.0;
+                double deliveryFee = (order.getDeliveryFee() != null) ? order.getDeliveryFee() : 0.0;
+                double finalPayable = itemsTotal + deliveryFee;
+
+                binding.tvOrderTotal.setText("LKR " + String.format("%.2f", itemsTotal));
+                binding.tvDeliveryFee.setText("LKR " + String.format("%.2f", deliveryFee));
+
                 String status = order.getStatus();
 
                 // Approved -> Pay Button Enable
@@ -114,17 +121,18 @@ public class OrderDetailFragment extends Fragment {
                     binding.btnPayNow.setVisibility(View.VISIBLE);
                     binding.btnPayNow.setEnabled(true);
 
-                    binding.tvOrderTotal.setText("LKR " + order.getTotal());
+                    binding.btnPayNow.setText("Pay Now (LKR " + String.format("%.2f", finalPayable) + ")");
                     binding.btnPayNow.setOnClickListener(v -> initiatePayHerePayment(order));
 
                 }
 
                 // Payment Done,Accepted,Delivered  -> Pay Button Disable
-                else if ("Payment Done".equals(status) || "Accepted".equals(status) || "Delivered".equals(status)) {
+                else if ("Payment Done".equals(status) || "Accepted".equals(status) ||
+                        "Delivered".equals(status) || "Received".equals(status)) {
                     binding.cardPaymentInfo.setVisibility(View.VISIBLE);
                     binding.btnPayNow.setVisibility(View.VISIBLE);
                     binding.btnPayNow.setEnabled(false);
-                    binding.btnPayNow.setText("Paid Successfully");
+                    binding.btnPayNow.setText("Paid Successfully - LKR " + String.format("%.2f", finalPayable));
                     binding.btnPayNow.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.gray)));
 
                     binding.tvOrderTotal.setText("LKR " + order.getTotal());
@@ -141,44 +149,55 @@ public class OrderDetailFragment extends Fragment {
         resetTimeline();
         if (status == null) return;
 
-        // 1. Order Placed (අනිවාර්යයෙන්ම සම්පූර්ණයි)
+        // Order Placed
         setStepCompleted(binding.stepPending, "Order Placed", formatTime(t1));
 
-        // 2. Admin Approved
-        if (t2 != null || "Approved".equals(status) || "Payment Done".equals(status) || "Accepted".equals(status) || "Delivered".equals(status)) {
+        // Admin Approved
+        if (t2 != null || "Approved".equals(status) || "Payment Done".equals(status) ||
+                "Accepted".equals(status) || "Delivered".equals(status) || "Received".equals(status)) {
             setStepCompleted(binding.stepAdminApprove, "Admin Approved", formatTime(t2));
         }
+        // Pending Active
         if ("Pending".equals(status)) {
             setStepActive(binding.stepPending, "Order Placed", "Your order is pending admin approval.");
         }
 
-        // 3. Payment Completed
-        if (t3 != null || "Payment Done".equals(status) || "Accepted".equals(status) || "Delivered".equals(status)) {
+        // Payment Completed
+        if (t3 != null || "Payment Done".equals(status) || "Accepted".equals(status) ||
+                "Delivered".equals(status) || "Received".equals(status)) {
             setStepCompleted(binding.stepPaymentDone, "Payment Completed", formatTime(t3));
         }
         if ("Approved".equals(status)) {
             setStepActive(binding.stepAdminApprove, "Admin Approved", "Please complete your payment now.");
         }
 
-        // 4. Order Accepted
-        if (t4 != null || "Accepted".equals(status) || "Delivered".equals(status)) {
+        // Order Accepted
+        if (t4 != null || "Accepted".equals(status) || "Delivered".equals(status) || "Received".equals(status)) {
             setStepCompleted(binding.stepOrderAccept, "Order Accepted", formatTime(t4));
         }
         if ("Payment Done".equals(status)) {
             setStepActive(binding.stepPaymentDone, "Payment Completed", "We have received your payment.");
         }
 
-        // 5. Order Delivered
-        if (t5 != null || "Delivered".equals(status)) {
+        // Order Delivered / Received
+        if (t5 != null || "Delivered".equals(status) || "Received".equals(status)) {
             setStepCompleted(binding.stepDelivered, "Order Delivered", formatTime(t5));
             binding.stepDelivered.viewLine.setVisibility(View.GONE);
         }
+
+        // Active State Messages
         if ("Accepted".equals(status)) {
             setStepActive(binding.stepOrderAccept, "Order Accepted", "Pharmacy is preparing your medicines.");
         }
 
         if ("Delivered".equals(status)) {
             setStepActive(binding.stepDelivered, "Order Delivered", "Order has arrived! Please confirm receipt.");
+        }
+
+        if ("Received".equals(status)) {
+            // Received dot
+            binding.stepDelivered.dot.setBackgroundResource(R.drawable.circle_green);
+            setStepActive(binding.stepDelivered, "Order Received", "Medicine received successfully. Stay safe!");
         }
     }
 
@@ -245,7 +264,6 @@ public class OrderDetailFragment extends Fragment {
         String fullAddress = "No.1, Galle Road";
 
         try {
-            // order එකේ තියෙන Lat/Lng
             double lat = Double.parseDouble(String.valueOf(order.getLatitude()));
             double lng = Double.parseDouble(String.valueOf(order.getLongitude()));
 
@@ -303,13 +321,12 @@ public class OrderDetailFragment extends Fragment {
         Log.d("PAYHERE_TRACE", "MerchantID: 1225156, Amount: " + amount + ", OrderID: " + order.getOrderId());
 
         if (currentUser != null) {
-            // ඔබේ User model එකේ variables වල නම් අනුව මේවා වෙනස් කරන්න
             req.getCustomer().setFirstName(currentUser.getName());
-            req.getCustomer().setLastName(""); // පවුලේ නම වෙනම තිබේ නම් එය මෙතැනට දෙන්න
+            req.getCustomer().setLastName("");
             req.getCustomer().setEmail(currentUser.getEmail());
             req.getCustomer().setPhone(currentUser.getMobile());
 
-            // Address Details (Geocoder එකෙන් ගත් දත්ත හෝ Profile එකේ දත්ත)
+            // Address Details
             req.getCustomer().getAddress().setAddress(fullAddress);
             req.getCustomer().getAddress().setCity(city);
             req.getCustomer().getAddress().setCountry("Sri Lanka");
@@ -323,7 +340,7 @@ public class OrderDetailFragment extends Fragment {
             req.getCustomer().setPhone("+94000000000");
         }
 
-//                req.setNotifyUrl("https://12342.requestcatcher.com/");
+        //req.setNotifyUrl("https://12342.requestcatcher.com/");
         try {
         Intent intent = new Intent(getActivity(), PHMainActivity.class);
         intent.putExtra(PHConstants.INTENT_EXTRA_DATA, req);
