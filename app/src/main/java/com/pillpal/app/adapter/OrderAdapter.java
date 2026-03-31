@@ -127,7 +127,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", "Received");
-        updates.put("receivedTimestamp", com.google.firebase.Timestamp.now()); // DB එකේ නැති නිසා මෙතැනදී අලුතින්ම හැදේ
+        updates.put("receivedTimestamp", com.google.firebase.Timestamp.now());
 
         db.collection("orders").document(orderId)
                 .update(updates)

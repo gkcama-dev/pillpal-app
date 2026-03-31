@@ -20,6 +20,7 @@ public class Order {
     private String status;
     private String date;
     private Double total;
+    private Double deliveryFee;
     private Timestamp pendingTimestamp;
     private Timestamp approvedTimestamp;
     private Timestamp paymentTimestamp;

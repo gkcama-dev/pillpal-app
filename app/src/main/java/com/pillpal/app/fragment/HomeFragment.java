@@ -120,7 +120,7 @@ public class HomeFragment extends Fragment {
 
         // Call Us (Direct Dial)
         binding.btnHomeCall.setOnClickListener(v -> {
-            String phoneNumber = "0112345678";
+            String phoneNumber = "0702541108";
 
             // Permission
             if (androidx.core.content.ContextCompat.checkSelfPermission(requireContext(),

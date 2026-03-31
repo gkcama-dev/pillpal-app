@@ -86,7 +86,7 @@ public class SelectLocationActivity extends AppCompatActivity {
 
         binding.btnConfirmOrder.setOnClickListener(v -> {
             if (selectedPoint != null) {
-                // මුලින්ම Image එක Upload කරන මෙතඩ් එක call කරනවා
+
                 startOrderSubmissionProcess();
             } else {
                 Toast.makeText(this, "Please wait for the map to load", Toast.LENGTH_SHORT).show();
@@ -104,7 +104,7 @@ public class SelectLocationActivity extends AppCompatActivity {
         });
     }
 
-    // 1. Image එක Upload කිරීම ආරම්භ කරන මෙතඩ් එක
+
     private void startOrderSubmissionProcess() {
         String uriString = getIntent().getStringExtra("PRESCRIPTION_URI");
         if (uriString == null) return;
@@ -147,7 +147,7 @@ public class SelectLocationActivity extends AppCompatActivity {
                             JSONObject jsonObject = new JSONObject(response.body().string());
                             String imageUrl = jsonObject.getJSONObject("data").getString("url");
 
-                            // Image URL එක ලැබුණා! දැන් Firestore එකට යවමු
+
                             runOnUiThread(() -> submitOrderToFirestore(imageUrl));
 
                         } catch (Exception e) { e.printStackTrace(); }
@@ -200,9 +200,9 @@ public class SelectLocationActivity extends AppCompatActivity {
     private void enableLocationComponent() {
         LocationComponentPlugin locationComponentPlugin = LocationComponentUtils.getLocationComponent(binding.mapView);
         locationComponentPlugin.setEnabled(true);
-        locationComponentPlugin.setLocationPuck(new LocationPuck2D()); // User ගේ location එක පෙන්වන puck එක
+        locationComponentPlugin.setLocationPuck(new LocationPuck2D());
 
-// Indicator එක වෙනස් වන සෑම විටම userCurrentLocation එක update කරනවා
+
         locationComponentPlugin.addOnIndicatorPositionChangedListener(point -> {
             userCurrentLocation = point; // සැබෑ location එක මෙතන තබා ගනී
 
@@ -231,7 +231,7 @@ public class SelectLocationActivity extends AppCompatActivity {
         });
     }
 
-    // 🔥 1. Latitude/Longitude -> Address -> Helper
+    //Latitude/Longitude -> Address -> Helper
     private String getAddressFromLocation(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
@@ -264,6 +264,7 @@ public class SelectLocationActivity extends AppCompatActivity {
         orderData.put("acceptedTimestamp", null);
         orderData.put("deliveredTimestamp", null);
         orderData.put("total", Double.valueOf(0.0));
+        orderData.put("deliveryFee", Double.valueOf(0.0));
         orderData.put("date", new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(new java.util.Date()));
         orderData.put("notes", notes);
         orderData.put("prescriptionUrl", prescriptionImageUrl); // ImgBB URL
@@ -309,5 +310,19 @@ public class SelectLocationActivity extends AppCompatActivity {
                         .zoom(16.0)
                         .build()
         );
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+            if (resultCode == RESULT_OK) {
+                setupMap();
+            } else {
+                Toast.makeText(this, "GPS is required to find your delivery location.", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
     }
 }

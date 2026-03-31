@@ -222,7 +222,6 @@ public class ProfileFragment extends Fragment {
                             JSONObject jsonObject = new JSONObject(response.body().string());
                             String imageUrl = jsonObject.getJSONObject("data").getString("url");
 
-                            // Image URL එක Update කිරීමට ViewModel භාවිතා කිරීම
                             Map<String, Object> update = new HashMap<>();
                             update.put("profileImageUrl", imageUrl);
                             requireActivity().runOnUiThread(() -> {

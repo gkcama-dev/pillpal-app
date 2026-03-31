@@ -2,6 +2,7 @@ package com.pillpal.app.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,6 +43,7 @@ import com.pillpal.app.fragment.OrderHistoryFragment;
 import com.pillpal.app.fragment.OrderRequestFragment;
 import com.pillpal.app.fragment.ProfileFragment;
 import com.pillpal.app.fragment.SettingsFragment;
+import com.pillpal.app.receiver.BatteryReceiver;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, NavigationBarView.OnItemSelectedListener {
@@ -57,10 +59,18 @@ public class MainActivity extends AppCompatActivity
 
     private ListenerRegistration notificationListener;
     private static final int NOTIFICATION_PERMISSION_CODE = 101; //Request Code
+    private BatteryReceiver batteryReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        batteryReceiver = new BatteryReceiver(new BatteryReceiver.BatteryListener() {
+            @Override
+            public void onBatteryLow() {
+                showBatteryLowDialog();
+            }
+        });
 
         android.content.SharedPreferences sharedPreferences = getSharedPreferences("ThemePrefs", MODE_PRIVATE);
         boolean isDarkMode = sharedPreferences.getBoolean("IsDarkMode", false);
@@ -83,7 +93,7 @@ public class MainActivity extends AppCompatActivity
         // Check user session and FCM Token
         if (firebaseAuth.getCurrentUser() != null) {
             updateFCMToken();
-            askNotificationPermission(); // Ask Permission
+            askNotificationPermission();
             listenForNotifications();
         } else {
             navigateToSignIn();
@@ -146,6 +156,23 @@ public class MainActivity extends AppCompatActivity
         });
 
         handleIntent(getIntent());
+        fetchUserInfo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Open App Connect Receiver
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_BATTERY_LOW);
+        filter.addAction(Intent.ACTION_BATTERY_OKAY);
+        registerReceiver(batteryReceiver, filter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(batteryReceiver);
     }
 
     /**
@@ -159,6 +186,16 @@ public class MainActivity extends AppCompatActivity
                         new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_PERMISSION_CODE);
             }
         }
+    }
+
+    private void showBatteryLowDialog() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("⚠️ Battery Low")
+                .setMessage("Your battery is running low. Please save your data and connect to a charger to avoid order interruptions.")
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .setIcon(R.drawable.logo)
+                .show();
     }
 
     /**
@@ -412,6 +449,38 @@ public class MainActivity extends AppCompatActivity
         // Remove Listener
         if (notificationListener != null) {
             notificationListener.remove();
+        }
+    }
+
+    private void fetchUserInfo() {
+        String uid = firebaseAuth.getUid();
+        if (uid != null) {
+            firebaseFirestore.collection("users").document(uid)
+                    .addSnapshotListener((documentSnapshot, error) -> {
+                        if (error != null) {
+                            Log.e("MainActivity", "User fetch failed", error);
+                            return;
+                        }
+
+                        if (documentSnapshot != null && documentSnapshot.exists()) {
+                            String name = documentSnapshot.getString("name");
+                            String email = documentSnapshot.getString("email");
+                            String profileImageUrl = documentSnapshot.getString("profileImage");
+
+                            // UI Update කිරීම (SideNavHeaderBinding හරහා)
+                            if (sideNavHeaderBinding != null) {
+                                sideNavHeaderBinding.headerUserName.setText(name != null ? name : "PillPal User");
+                                sideNavHeaderBinding.headerUserEmail.setText(email != null ? email : "user@pillpal.app");
+
+                                if (profileImageUrl != null && !profileImageUrl.isEmpty()) {
+                                    com.bumptech.glide.Glide.with(this)
+                                            .load(profileImageUrl)
+                                            .placeholder(R.drawable.avatar)
+                                            .into(sideNavHeaderBinding.headerProfilePic);
+                                }
+                            }
+                        }
+                    });
         }
     }
 }
